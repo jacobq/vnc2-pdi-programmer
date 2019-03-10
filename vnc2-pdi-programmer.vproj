@@ -494,11 +494,46 @@
 		<VirtualFolder>{00000000-0000-0000-0000-000000000006}</VirtualFolder>
 	</LibraryFiles>	
 	
+	
+	
 	<OpenFilesList>
 		<filename>vnc2-pdi-programmer.c</filename>
+		<actvieTabIndex>0</actvieTabIndex>
 	</OpenFilesList>
 	<OpenFilesList>
 		<filename>vnc2-pdi-programmer_iomux.c</filename>
-		<actvieTabIndex>1</actvieTabIndex>
 	</OpenFilesList>
+	<OpenFilesList>
+		<filename>FAT.h</filename>
+	</OpenFilesList>
+	<OpenFilesList>
+		<filename>vnc2-pdi-programmer.h</filename>
+	</OpenFilesList>
+	<BreakPointList>
+		<filename>vnc2-pdi-programmer.c</filename>
+		<lineNo>308</lineNo>
+		<isEnabled>true</isEnabled>
+	</BreakPointList>
+	<BreakPointList>
+		<filename>vnc2-pdi-programmer.c</filename>
+		<lineNo>204</lineNo>
+		<isEnabled>true</isEnabled>
+	</BreakPointList>
+	<BreakPointList>
+		<filename>vnc2-pdi-programmer.c</filename>
+		<lineNo>314</lineNo>
+		<isEnabled>true</isEnabled>
+	</BreakPointList>
+	<WatchVariableList>
+		<WatchVarName>hBOMS</WatchVarName>
+		<DisplayType>2</DisplayType>
+	</WatchVariableList>
+	<WatchVariableList>
+		<WatchVarName>boms_iocb</WatchVarName>
+		<DisplayType>2</DisplayType>
+	</WatchVariableList>
+	<WatchVariableList>
+		<WatchVarName>boms_att</WatchVarName>
+		<DisplayType>2</DisplayType>
+	</WatchVariableList>
 </Project>

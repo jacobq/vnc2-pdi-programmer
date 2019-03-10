@@ -13,6 +13,8 @@
 
 #include "vnc2-pdi-programmer.h"
 
+#define _NOP asm { "NOP" }
+
 /* FTDI:STP Thread Prototypes */
 vos_tcb_t *tcbFIRMWARE;
 vos_tcb_t *tcbTHREADFILEREADER;
@@ -61,20 +63,20 @@ void main(void)
 	gpio_init(VOS_DEV_GPIO_PORT_B,&gpioContextB);
 	
 	// Initialise Timer 1
-	tmrContext1.timer_identifier = 1;
-	tmr_init(VOS_DEV_TIMER_1,&tmrContext1);
+	//tmrContext1.timer_identifier = 1;
+	//tmr_init(VOS_DEV_TIMER_1,&tmrContext1);
 	
 	// Initialise FAT File System Driver
 	fatdrv_init(VOS_DEV_FAT_FILE_SYSTEM_1);
 	
 	// Initialise FAT File System Driver
-	fatdrv_init(VOS_DEV_FAT_FILE_SYSTEM_2);
+	//fatdrv_init(VOS_DEV_FAT_FILE_SYSTEM_2);
 	
 	// Initialise BOMS Device Driver
 	boms_init(VOS_DEV_BOMS_1);
 	
 	// Initialise BOMS Device Driver
-	boms_init(VOS_DEV_BOMS_2);
+	//boms_init(VOS_DEV_BOMS_2);
 	
 	
 	
@@ -83,7 +85,8 @@ void main(void)
 	usbhostContext.ep_count = 16;
 	usbhostContext.xfer_count = 2;
 	usbhostContext.iso_xfer_count = 2;
-	usbhost_init(VOS_DEV_USBHOST_1, VOS_DEV_USBHOST_2, &usbhostContext);
+	//usbhost_init(VOS_DEV_USBHOST_1, VOS_DEV_USBHOST_2, &usbhostContext);
+	usbhost_init(VOS_DEV_USBHOST_1, -1, &usbhostContext);
 	/* FTDI:EDI */
 
 	/* FTDI:SCT Thread Creation */
@@ -94,6 +97,9 @@ void main(void)
 	vos_start_scheduler();
 
 main_loop:
+	_NOP
+	_NOP
+	_NOP
 	goto main_loop;
 }
 
@@ -138,7 +144,7 @@ VOS_HANDLE fat_attach(VOS_HANDLE hMSI, unsigned char devFAT)
 
 	if (vos_dev_ioctl(hFAT, &fat_ioctl) != FAT_OK)
 	{
-                // unable to open the FAT driver
+        // unable to open the FAT driver
 		vos_dev_close(hFAT);
 		hFAT = NULL;
 	}
@@ -229,9 +235,9 @@ void open_drivers(void)
         /* Code for opening and closing drivers - move to required places in Application Threads */
         /* FTDI:SDA Driver Open */
         hUSBHOST_1 = vos_dev_open(VOS_DEV_USBHOST_1);
-        hUSBHOST_2 = vos_dev_open(VOS_DEV_USBHOST_2);
+        //hUSBHOST_2 = vos_dev_open(VOS_DEV_USBHOST_2);
         hGPIO_PORT_B = vos_dev_open(VOS_DEV_GPIO_PORT_B);
-        hTIMER_1 = vos_dev_open(VOS_DEV_TIMER_1);
+        //hTIMER_1 = vos_dev_open(VOS_DEV_TIMER_1);
         /* FTDI:EDA */
 }
 
@@ -239,9 +245,9 @@ void attach_drivers(void)
 {
         /* FTDI:SUA Layered Driver Attach Function Calls */
         hBOMS_1 = boms_attach(hUSBHOST_1, VOS_DEV_BOMS_1);
-        hBOMS_2 = boms_attach(hUSBHOST_2, VOS_DEV_BOMS_2);
+        //hBOMS_2 = boms_attach(hUSBHOST_2, VOS_DEV_BOMS_2);
         hFAT_FILE_SYSTEM_1 = fat_attach(hBOMS_1, VOS_DEV_FAT_FILE_SYSTEM_1);
-        hFAT_FILE_SYSTEM_2 = fat_attach(hBOMS_2, VOS_DEV_FAT_FILE_SYSTEM_2);
+        //hFAT_FILE_SYSTEM_2 = fat_attach(hBOMS_2, VOS_DEV_FAT_FILE_SYSTEM_2);
         // TODO attach stdio to file system and stdio interface
         //fsAttach(hFAT_FILE_SYSTEM); // VOS_HANDLE for file system (typically FAT)
         //stdioAttach(hUART); // VOS_HANDLE for stdio interface (typically UART)
@@ -255,9 +261,9 @@ void close_drivers(void)
 {
         /* FTDI:SDB Driver Close */
         vos_dev_close(hUSBHOST_1);
-        vos_dev_close(hUSBHOST_2);
+        //vos_dev_close(hUSBHOST_2);
         vos_dev_close(hGPIO_PORT_B);
-        vos_dev_close(hTIMER_1);
+        //vos_dev_close(hTIMER_1);
         /* FTDI:EDB */
 }
 
@@ -265,15 +271,112 @@ void close_drivers(void)
 
 void firmware()
 {
-	/* Thread code to be added here */
+
+	#define PDI_CLK (0x01 << 0)
+	#define PDI_TX (0x01 << 1)
+	#define PDI_RX (0x01 << 2)
+
+	//#define  do { portb_data ^= ; vos_gpio_write_port(GPIO_PORT_B, portb_data) } while(0)
+	
+	uint8 portb_data = 0x00;
+	char buffer[256];
+	unsigned int i, j;
+	char c;
+	unsigned int size = 0;
+	FILE *file;
 
 
+	open_drivers();
+	//attach_drivers();
+	vos_gpio_set_port_mode(GPIO_PORT_B, PDI_CLK | PDI_TX);
+
+	while (1)
+	{
+		// wait for enumeration to complete
+		vos_delay_msecs(250);
+
+		if (usbhost_connect_state(hUSBHOST_1) == PORT_STATE_ENUMERATED)
+		{
+			hBOMS_1 = boms_attach(hUSBHOST_1, VOS_DEV_BOMS_1);
+
+			if (hBOMS_1 == NULL)
+			{
+				// FIXME: handle fault condition
+				break;
+			}
+
+			hFAT_FILE_SYSTEM_1 = fat_attach(hBOMS_1, VOS_DEV_FAT_FILE_SYSTEM_1);
+
+			if (hFAT_FILE_SYSTEM_1 == NULL)
+			{
+				// FIXME: handle fault condition
+				break;
+			}
+
+			// lastly attach the stdio file system to the FAT file system
+			fsAttach(hFAT_FILE_SYSTEM_1);
+
+			// now call the stdio runtime functions
+			file = fopen("pdi.bin", "r");
+
+			if (file == NULL)
+			{
+				// FIXME: handle fault condition
+				break;
+			}
+
+			do
+			{
+				// (Purposely only load 4 at a time so we can watch multiple xfers on the logic analyzer before we run out of capture points)
+				size = fread(buffer, 4, 1, file);
+				for (i = 0; i < size; i++)
+				{
+					c = buffer[i];
+					for (j = 0; j < 8; j++)
+					{
+						if ((c << j) & 0x80)
+							portb_data |= PDI_TX;
+						else
+							portb_data &= ~PDI_TX;
+							
+						vos_gpio_write_port(GPIO_PORT_B, portb_data);
+						portb_data ^= PDI_CLK;
+						vos_gpio_write_port(GPIO_PORT_B, portb_data);
+						portb_data ^= PDI_CLK;
+						vos_gpio_write_port(GPIO_PORT_B, portb_data);
+					}
+				}
+			} while(size > 0);
+		
+/*
+			if (fwrite(tx_buf, strlen(tx_buf), sizeof(char), file) == -1)
+			{
+				leds = led3;
+				vos_gpio_write_port(GPIO_PORT_A, leds);
+				vos_delay_msecs(1000);
+			}
+*/
+			if (fclose(file) == -1)
+			{
+				// FIXME: handle fault condition
+			}
+
+			fat_detach(hFAT_FILE_SYSTEM_1);
+			boms_detach(hBOMS_1);
+
+			vos_delay_msecs(5000);
+		}
+	}	
 }
 
 void threadFileReader()
 {
 	/* Thread code to be added here */
-
+	while (1)
+	{
+		_NOP
+		vos_delay_msecs(1000);
+	}
 
 }
 
