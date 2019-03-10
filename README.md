@@ -1,13 +1,15 @@
 # vnc2-pdi-programmer
 
-:warning: work in progress
+:warning: This project is currently under development (i.e. it doesn't work yet).
+(TODO: remove warning after first release)
 
 ## Introduction
 
 This program demonstrates a way to load compiled [AVR][avr-home] code onto  from a file (`avr-app.bin`) on a USB stick
 attached to an [FTDI VNC2][vnc-home] with some of its I/O pins connected to the AVR MCU's [PDI][sigrok-pdi] lines.
 I am making this project to help a colleague.
-
+**Note:** "VNC2" is an abbreviation for "Vinculum-II Embedded Dual USB Host Controller IC" and has nothing to do with
+[`vnc` (the graphical desktop-sharing system)](https://en.wikipedia.org/wiki/Virtual_Network_Computing).
 
 ## Hardware connections
 
@@ -26,12 +28,12 @@ the ["bit banging"][bit-banging-wiki] approach with hardware peripherals, e.g. [
 | IO10      | 31       | GPIO B2 input  | PDI_RX  |                    |
 
 
-## Design overview
+## Useful links
 
-
-
-## Other notes
-
+* [AVR1612: PDI programming driver][AVR1612]
+* [XMEGA A Manual][avr-xmega-a] (especially §29 "Program and Debug Interface")
+* [VNC2 Toolchain][vnc-toolchain]
+* [VNC2 Datasheet][vnc-datasheet]
 
 
 ## License
@@ -39,7 +41,7 @@ the ["bit banging"][bit-banging-wiki] approach with hardware peripherals, e.g. [
 This is an open source project, licensed under the terms of the "MIT" license, as stated in the [`LICENSE`](./LICENSE) file.
 Note, however, that in order to function, it relies on third party products that are not necessarily open source.
 For example, this project depends on the libraries provided by FTDI to support reading FAT file system data from a USB mass storage device. 
-The toolchain distributed by FTDI also appears to [have its own license terms][vnc-ide-license].
+The toolchain distributed by FTDI also appears to [have its own license terms][vnc-toolchain-license].
 Although the author believes this project to be in compliance with all applicable license terms,
 it is ultimately the user's responsibilty to check that their usage is not in violation.
 
@@ -47,6 +49,7 @@ it is ultimately the user's responsibilty to check that their usage is not in vi
 
 [avr-home]: https://www.microchip.com/design-centers/8-bit/avr-mcus
 [avr-wiki]: https://en.wikipedia.org/wiki/AVR_microcontrollers
+[avr-xmega-a]: https://ww1.microchip.com/downloads/en/DeviceDoc/doc8077.pdf
 [AVR1612]: https://www.microchip.com/wwwAppNotes/AppNotes.aspx?appnote=en591295
 [AVR1612-pdf]: https://ww1.microchip.com/downloads/en/AppNotes/doc8282.pdf
 [sigrok-pdi]: https://sigrok.org/wiki/Protocol_decoder:Avr_pdi
@@ -56,5 +59,5 @@ it is ultimately the user's responsibilty to check that their usage is not in vi
 
 [vnc-home]: https://www.ftdichip.com/Products/ICs/VNC2.htm
 [vnc-datasheet]: https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_Vinculum-II.pdf
-[vnc-ide]: https://www.ftdichip.com/Firmware/VNC2tools.htm#VNC2Toolchain
-[vnc-ide-license]: https://www.ftdichip.com/Firmware/vnc2toolchain/License.txt
+[vnc-toolchain]: https://www.ftdichip.com/Firmware/VNC2tools.htm#VNC2Toolchain
+[vnc-toolchain-license]: https://www.ftdichip.com/Firmware/vnc2toolchain/License.txt
