@@ -11,8 +11,23 @@ I am making this project to help a colleague.
 
 ## Hardware connections
 
+PDI requires 2 signals (clock & data + GND), but the data signal is bidirection.
+This project follows the example illustrated in the [AVR1612 application note][AVR1612-pdf]
+in that it connects two external pins (thru isolating resistors) to the PDI data signal.
+This simplifies initial development and also might make it possible to eventually replace
+the ["bit banging"][bit-banging-wiki] approach with hardware peripherals, e.g. [SPI][spi-wiki]
+(see section 6.4 of [the VNC2 datasheet][vnc-datasheet]).
+
+
+| VNC2 name | VNC2 pin | VNC2 function  | Name    | Comments           |
+|-----------|----------|----------------|---------|--------------------|
+| IO8       | 29       | GPIO B0 output | PDI_CLK |                    |
+| IO9       | 30       | GPIO B1 output | PDI_TX  |                    |
+| IO10      | 31       | GPIO B2 input  | PDI_RX  |                    |
+
 
 ## Design overview
+
 
 
 ## Other notes
@@ -27,6 +42,9 @@ I am making this project to help a colleague.
 [AVR1612]: https://www.microchip.com/wwwAppNotes/AppNotes.aspx?appnote=en591295
 [AVR1612-pdf]: https://ww1.microchip.com/downloads/en/AppNotes/doc8282.pdf
 [sigrok-pdi]: https://sigrok.org/wiki/Protocol_decoder:Avr_pdi
+
+[bit-banging-wiki]: https://en.wikipedia.org/wiki/Bit_banging
+[spi-wiki]: https://en.wikipedia.org/wiki/Serial_Peripheral_Interface
 
 [vnc-home]: https://www.ftdichip.com/Products/ICs/VNC2.htm
 [vnc-datasheet]: https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_Vinculum-II.pdf
