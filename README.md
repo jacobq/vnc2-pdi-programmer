@@ -32,8 +32,16 @@ the ["bit banging"][bit-banging-wiki] approach with hardware peripherals, e.g. [
 
 ## Other notes
 
+
+
 ## License
 
+This is an open source project, licensed under the terms of the "MIT" license, as stated in the [`LICENSE`](./LICENSE) file.
+Note, however, that in order to function, it relies on third party products that are not necessarily open source.
+For example, this project depends on the libraries provided by FTDI to support reading FAT file system data from a USB mass storage device. 
+The toolchain distributed by FTDI also appears to [have its own license terms][vnc-ide-license].
+Although the author believes this project to be in compliance with all applicable license terms,
+it is ultimately the user's responsibilty to check that their usage is not in violation.
 
 
 
@@ -49,3 +57,4 @@ the ["bit banging"][bit-banging-wiki] approach with hardware peripherals, e.g. [
 [vnc-home]: https://www.ftdichip.com/Products/ICs/VNC2.htm
 [vnc-datasheet]: https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_Vinculum-II.pdf
 [vnc-ide]: https://www.ftdichip.com/Firmware/VNC2tools.htm#VNC2Toolchain
+[vnc-ide-license]: https://www.ftdichip.com/Firmware/vnc2toolchain/License.txt
